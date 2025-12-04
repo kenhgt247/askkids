@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
-import { CountingGame, ColoringGame } from './components/Games';
-import { LikeButton, CommentSection } from './components/Social.tsx';
-import { initialDocuments, initialNotifications, trendingTags, topUsers, initialStories, currentUser } from './services/mockData';
-import { Question, DocumentItem, Answer, BlogPost, User, Notification, Comment, Attachment, Story } from './types';
+import { CountingGame, ColoringGame } from '../components/Games';
+import { LikeButton, CommentSection } from '../components/Social.tsx';
+import { initialDocuments, initialNotifications, trendingTags, topUsers, initialStories, currentUser } from '../services/mockData';
+import { Question, DocumentItem, Answer, BlogPost, User, Notification, Comment, Attachment, Story } from '../types';
 import { Search, Heart, MessageSquare, Download, Lock, Check, Eye, ChevronLeft, Send, Share2, Award, Calendar, Image as ImageIcon, Star, PenTool, Edit3, Camera, Gamepad2, Zap, Trophy, Flame, Sun, MoreHorizontal, Flag, MessageCircle, ThumbsUp, Hash, Users, PlusCircle, Smile, Video, Youtube, PlayCircle, BookOpen, ExternalLink, ArrowRight, X, ChevronRight, Home, Filter, Sparkles, BadgeCheck, Loader2, Database } from 'lucide-react';
 
 // --- FIREBASE IMPORTS ---

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Home, MessageCircle, BookOpen, Gamepad2, User as UserIcon, Bell, Facebook, Instagram, Youtube, Menu, LogOut, Search, Heart, LogIn } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
-import { User, Notification } from '../types';
+import { User, Notification } from '../../types';
 import { logoutUser } from '../services/firebaseService';
 
 interface LayoutProps {

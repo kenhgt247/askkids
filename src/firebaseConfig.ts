@@ -12,12 +12,13 @@ import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   // Thay thế bằng cấu hình thật của bạn từ Firebase Console
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAgsPzWE9_x66G9XvqjFYveUKTjN-TXCmU",
+  authDomain: "askids-14002.firebaseapp.com",
+  projectId: "askids-14002",
+  storageBucket: "askids-14002.firebasestorage.app",
+  messagingSenderId: "584417098626",
+  appId: "1:584417098626:web:5f6bdacca0a0f0eaf66d9b",
+  measurementId: "G-SWJ9F71PZR"
 };
 
 // Khởi tạo Firebase

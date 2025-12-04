@@ -16,8 +16,8 @@ import {
 } from "firebase/firestore";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { db, auth, googleProvider } from "../firebaseConfig";
-import { User, Question, BlogPost, Answer, Comment, UserRole } from "../types";
-import { initialQuestions, initialBlogPosts } from "./mockData";
+import { User, Question, BlogPost, Answer, Comment, UserRole } from "../../types";
+import { initialQuestions, initialBlogPosts } from "../../services/mockData";
 
 // --- AUTHENTICATION ---
 export const loginWithGoogle = async () => {
