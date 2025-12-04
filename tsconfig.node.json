@@ -6,5 +6,7 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["vite.config.ts"]
+
+  /* 🔥Không cho TypeScript load file nào */
+  "include": []
 }
