@@ -20,7 +20,16 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["."],
-  "exclude": ["node_modules", "vite.config.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+
+  /* ❌ KHÔNG BAO GIỜ include "." vì sẽ lỗi trên Vercel */
+  "include": ["src"],
+
+  /* ❗ Loại toàn bộ file config */
+  "exclude": [
+    "node_modules",
+    "vite.config.ts",
+    "postcss.config.js",
+    "tailwind.config.js",
+    "tsconfig.node.json"
+  ]
 }
