@@ -6,7 +6,6 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
@@ -14,17 +13,15 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
 
-  /* ❌ KHÔNG BAO GIỜ include "." vì sẽ lỗi trên Vercel */
+  /* 🔥 Sửa dòng này – NGUYÊN NHÂ GÂY LỖI */
   "include": ["src"],
 
-  /* ❗ Loại toàn bộ file config */
   "exclude": [
     "node_modules",
     "vite.config.ts",
