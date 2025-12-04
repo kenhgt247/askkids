@@ -6,6 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
@@ -13,20 +14,13 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-
-  /* 🔥 Sửa dòng này – NGUYÊN NHÂ GÂY LỖI */
-  "include": ["src"],
-
-  "exclude": [
-    "node_modules",
-    "vite.config.ts",
-    "postcss.config.js",
-    "tailwind.config.js",
-    "tsconfig.node.json"
-  ]
+  "include": ["src", "components", "services", "types.ts", "index.tsx"],
+  "exclude": ["node_modules", "vite.config.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

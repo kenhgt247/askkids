@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Link, useParams, useNavigate, useLocation } from 'react-router-dom';
-import Layout from './components/Layout';
+import Layout from '../components/Layout';
 import { CountingGame, ColoringGame } from '../components/Games';
 import { LikeButton, CommentSection } from '../components/Social';
 import { initialDocuments, initialNotifications, trendingTags, topUsers, initialStories, currentUser } from '../services/mockData';
@@ -681,7 +681,12 @@ const QADetailView = ({
     currentUser, 
     onAddAnswer, 
     onLike
-  }: any) => {
+  }: {
+    questions: Question[],
+    currentUser: User | null,
+    onAddAnswer: (qid: string, content: string) => void,
+    onLike: (id: string, votes: number, liked: boolean) => void
+  }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const question = questions.find((q: Question) => q.id === id);
@@ -739,6 +744,7 @@ const QADetailView = ({
         </div>
   
         {/* Answer Input */}
+        {currentUser ? (
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex gap-4">
            <img src={currentUser.avatar} className="w-10 h-10 rounded-full" />
            <form className="flex-1" onSubmit={handleAnswerSubmit}>
@@ -755,6 +761,14 @@ const QADetailView = ({
               </div>
            </form>
         </div>
+        ) : (
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 text-center">
+                 <p className="text-slate-500 font-medium mb-3">Bạn cần đăng nhập để trả lời câu hỏi này</p>
+                 <Link to="/" className="inline-block bg-rose-500 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-md hover:bg-rose-600">
+                    Đăng nhập ngay
+                 </Link>
+            </div>
+        )}
   
         {/* Answers List */}
         <div className="space-y-4">
@@ -791,6 +805,152 @@ const QADetailView = ({
       </div>
     );
   };
+
+// --- VIEW: BLOG DETAIL ---
+const BlogDetailView = ({ 
+  posts, 
+  currentUser, 
+  onLike, 
+  onComment,
+  onReplyComment
+}: { 
+  posts: BlogPost[], 
+  currentUser: User | null, 
+  onLike: (id: string) => void,
+  onComment: (postId: string, content: string) => void,
+  onReplyComment: (postId: string, commentId: string, content: string) => void
+}) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const post = posts.find(p => p.id === id);
+
+  if (!post) return <div>Not found</div>;
+
+  return (
+    <div className="max-w-3xl mx-auto pb-10 animate-fade-in">
+       <button onClick={() => navigate('/')} className="text-slate-500 hover:text-rose-500 flex items-center gap-1 text-sm font-bold mb-6">
+         <ChevronLeft size={16} /> Quay lại
+       </button>
+
+       <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200 mb-6">
+          <div className="aspect-video w-full relative">
+            <img src={post.thumbnail} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
+              <div className="w-full">
+                <span className="bg-rose-500 text-white text-xs font-bold px-2 py-1 rounded mb-3 inline-block shadow-sm">
+                  {/* Category Name if available */}
+                </span>
+                <h1 className="text-2xl sm:text-4xl font-bold text-white leading-tight mb-4 text-shadow-sm">{post.title}</h1>
+                <div className="flex items-center gap-3 text-white/90 text-sm">
+                   <img src={post.author.avatar} className="w-10 h-10 rounded-full border-2 border-white" />
+                   <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                         <span className="font-bold text-white">{post.author.name}</span>
+                         {post.author.role === 'expert' && <VerifiedBadge />}
+                      </div>
+                      <span className="text-xs text-white/80">{post.createdAt} • {post.views} lượt xem</span>
+                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-8">
+            <div 
+              className="prose prose-slate prose-headings:font-bold prose-headings:text-slate-800 prose-p:text-slate-600 max-w-none"
+              dangerouslySetInnerHTML={{ __html: post.content }} 
+            />
+
+            <MediaDisplay attachments={post.attachments} />
+            
+            <div className="mt-10 pt-6 border-t border-slate-100 flex items-center justify-between">
+               <div className="flex items-center gap-4">
+                  <LikeButton liked={!!post.isLiked} count={post.likes} onToggle={() => onLike(post.id)} size={24} />
+                  <div className="text-slate-500 font-bold flex items-center gap-2">
+                     <MessageSquare size={24} /> {post.comments.length}
+                  </div>
+               </div>
+               <button className="bg-blue-50 text-blue-600 px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-blue-100">
+                  <Share2 size={18} /> Chia sẻ
+               </button>
+            </div>
+          </div>
+       </div>
+
+       {/* Comments Area */}
+       <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+          <h3 className="font-bold text-slate-800 text-lg mb-4">Bình luận bài viết</h3>
+          <CommentSection 
+             comments={post.comments} 
+             currentUser={currentUser}
+             onAddComment={(content, parentId) => {
+                if(parentId) onReplyComment(post.id, parentId, content);
+                else onComment(post.id, content);
+             }}
+          />
+       </div>
+    </div>
+  );
+};
+
+// --- VIEW: DOCUMENT DETAIL (New) ---
+const DocDetailView = ({ documents, userPoints, deductPoints }: { documents: DocumentItem[], userPoints: number, deductPoints: any }) => {
+  const { id } = useParams();
+  const doc = documents.find(d => d.id === id);
+  const [rating, setRating] = useState(0);
+
+  if(!doc) return <div>Not Found</div>;
+
+  return (
+     <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in">
+        <div className="md:col-span-1">
+           <div className="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 mb-4">
+              <img src={doc.thumbnail} className="w-full rounded-xl" />
+           </div>
+           <button className="w-full bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-md hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2">
+             <Download /> Tải xuống {doc.isVip ? `(${doc.pointsRequired} điểm)` : '(Miễn phí)'}
+           </button>
+        </div>
+        <div className="md:col-span-2 space-y-6">
+           <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+              <div className="flex gap-2 mb-2">
+                 <span className={`px-2 py-1 rounded text-xs font-bold text-white ${doc.fileType === 'pdf' ? 'bg-red-500' : 'bg-blue-500'}`}>{doc.fileType.toUpperCase()}</span>
+                 {doc.isVip && <span className="bg-amber-100 text-amber-600 px-2 py-1 rounded text-xs font-bold flex items-center gap-1"><Lock size={12}/> VIP</span>}
+              </div>
+              <h1 className="text-2xl font-bold text-slate-800 mb-4">{doc.title}</h1>
+              <p className="text-slate-600 mb-6">{doc.description}</p>
+              
+              <div className="flex items-center gap-6 border-t border-slate-100 pt-4">
+                 <div className="text-center">
+                    <div className="font-bold text-xl text-slate-800">{doc.rating}</div>
+                    <div className="flex text-amber-400"><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/></div>
+                    <div className="text-xs text-slate-400">Đánh giá</div>
+                 </div>
+                 <div className="h-8 w-px bg-slate-200"></div>
+                 <div className="text-center">
+                    <div className="font-bold text-xl text-slate-800">{doc.downloads}</div>
+                    <div className="text-xs text-slate-400">Lượt tải</div>
+                 </div>
+              </div>
+           </div>
+
+           {/* Review Section */}
+           <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+              <h3 className="font-bold text-slate-800 mb-4">Đánh giá tài liệu</h3>
+              <div className="flex gap-2 mb-4">
+                 {[1,2,3,4,5].map(s => (
+                    <button key={s} onClick={() => setRating(s)} className={`${rating >= s ? 'text-amber-400' : 'text-slate-300'}`}>
+                       <Star fill={rating >= s ? "currentColor" : "none"} size={28} />
+                    </button>
+                 ))}
+              </div>
+              <textarea className="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none border border-slate-200 focus:border-emerald-300" placeholder="Viết đánh giá của bạn..."></textarea>
+              <button className="mt-3 bg-emerald-500 text-white px-6 py-2 rounded-lg font-bold text-sm">Gửi đánh giá</button>
+           </div>
+        </div>
+     </div>
+  )
+}
 
 // --- MAIN APP COMPONENT ---
 const App: React.FC = () => {
@@ -863,9 +1023,21 @@ const App: React.FC = () => {
       await toggleLikeQuestion(id, currentVotes, isLiked);
   };
 
+  const handleLikePost = (id: string) => {
+    // Placeholder for like post
+  };
+
   const handleAddAnswer = async (qid: string, content: string) => {
       if(!user) return;
       await addAnswerToFirestore(qid, content, user);
+  };
+
+  const handleCommentPost = (postId: string, content: string) => {
+     // Placeholder
+  };
+  
+  const handleReplyPostComment = (postId: string, commentId: string, content: string) => {
+     // Placeholder
   };
 
   // Seed data button for demo
@@ -893,7 +1065,7 @@ const App: React.FC = () => {
                     posts={posts} 
                     currentUser={user} 
                     onLikeQ={handleLikeQuestion} 
-                    onLikeP={() => {}} 
+                    onLikeP={handleLikePost} 
                     stories={stories}
                 />
             ) : (
@@ -906,9 +1078,11 @@ const App: React.FC = () => {
           <Route path="/qa/create" element={user ? <CreateView type="question" currentUser={user} onSubmit={(data: any) => handleCreateContent({...data, type: 'question'})} /> : <LoginView onLogin={handleLogin}/>} />
           
           <Route path="/blog" element={<div className="animate-fade-in"><h1 className="text-2xl font-bold mb-4">Blog</h1>{posts.map(p => <Link key={p.id} to={`/blog/${p.id}`} className="block bg-white p-4 mb-4 rounded-xl border border-slate-200 hover:shadow-md">{p.title}</Link>)}</div>} />
+          <Route path="/blog/:id" element={<BlogDetailView posts={posts} currentUser={user} onLike={handleLikePost} onComment={handleCommentPost} onReplyComment={handleReplyPostComment} />} />
           <Route path="/blog/create" element={user ? <CreateView type="blog" currentUser={user} onSubmit={(data: any) => handleCreateContent({...data, type: 'blog'})} /> : <LoginView onLogin={handleLogin}/>} />
           
           <Route path="/docs" element={<div className="animate-fade-in"><h1 className="text-2xl font-bold mb-4">Tài liệu</h1>{docs.map(d => <Link key={d.id} to={`/docs/${d.id}`} className="block bg-white p-4 mb-4 rounded-xl border border-slate-200 hover:shadow-md">{d.title}</Link>)}</div>} />
+          <Route path="/docs/:id" element={<DocDetailView documents={docs} userPoints={user?.points || 0} deductPoints={() => true} />} />
           
           <Route path="/games" element={<div className="max-w-4xl mx-auto space-y-6"><h1 className="text-2xl font-bold text-slate-800">Góc bé chơi</h1><div className="grid grid-cols-1 md:grid-cols-2 gap-6"><CountingGame /><ColoringGame /></div></div>} />
         </Routes>
